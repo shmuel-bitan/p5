@@ -20,18 +20,13 @@ function getIdFromUrl() {
     return id;
 }
 
-/** 
- * Recuperation des donnees sur l'API.
- * @param {string} "identifiant du produit"
- * @return {json}
-*/
+
 
 const getElement = function (id) {
 
     // Ajout de l'ID sur l'URL.
     fetch(`http://localhost:3000/api/products/${id}`)
         .then(function (response) {
-            // Utilisation d'une condition pour l'affichage de la reponse dans la console.
             if (response.ok) {
                 return response.json();
             }
@@ -46,7 +41,7 @@ const getElement = function (id) {
 
 const setHTML = function (article) {
 
-    // Placement des donnees API aux bons endroits. 
+    
     let imageContainer = document.createElement("img");
     imageContainer.setAttribute("src", article.imageUrl);
     imageContainer.setAttribute("alt", article.altTxt);
@@ -58,17 +53,86 @@ const setHTML = function (article) {
 
 
 const setColorSelect = function (colors) {
-    let domColors = document.getElementById("colors");
-    // Affichage des couleurs dans la console.
+    let domColors = document.getElementById("colors")
     for (let color of colors) {
         let option = document.createElement("option");
         option.textContent = color;
         domColors.appendChild(option);
     }   
 }
+function getCart(){
+    let cart = JSON.parse(localStorage.getItem("cart"));
+    if (cart == null){
+        cart = []
+    }
+    return cart
+}
+function saveCart(cart){
+    localStorage.setItem("cart",JSON.stringify(cart));
+
+}
+function addToCart(product) {
+    let cart = getCart();
+    for (let i in cart) {
+        const productInCart = cart[i];
+        if (productInCart.id === product.id && productInCart.color === product.color) {
+            productInCart.quantity = product.quantity + productInCart.quantity;
+            saveCart(cart);
+            if (window.confirm('Votre sélection est ajoutée au panier. Pour accéder au panier cliquez sur "OK", sinon "ANNULER".')) {
+                document.location.href = "http://127.0.0.1:5501/front/html/cart.html";
+            }
+            return;
+        }
+    }
+    cart.push(product);
+    saveCart(cart);
+    if (window.confirm('Votre sélection est ajoutée au panier. Pour accéder au panier cliquez sur "OK", sinon "ANNULER".')) {
+        document.location.href = "http://127.0.0.1:5501/front/html/cart.html";
+    }
+    return;
+}
+
+
+function listenElementCart() {
+    elementCart.addEventListener("click", function () {
+        let product = {
+            id: id,
+            quantity: parseInt(quantity.value),
+            color: colors.value,
+        };
+        if (checkQuantity() && checkColor()) {
+            addToCart(product);
+        };
+    });
+}
+
+
+function checkColor() {
+    let colorOrder = document.getElementById("colors").value;
+    if (colorOrder > [0]) {
+        return true;
+    } else {
+        alert("Veuillez séléctionner une couleur.");
+        return false;
+    }
+}
+
+
+function checkQuantity() {
+    let quantityOrder = document.getElementById("quantity").value;
+    if (quantityOrder > 0 && quantityOrder <= 100) {
+        return true;
+    } else {
+        alert("Veuillez saisir une quantité entre 1 et 100.");
+        return false;
+    }
+}
+
 
 function main() {
     let productId = getIdFromUrl();
-    getElement(productId);  
+    getElement(productId); 
+    listenElementCart(); 
 }
 main();
+
