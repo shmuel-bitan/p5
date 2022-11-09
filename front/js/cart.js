@@ -10,22 +10,18 @@ function emptyCart() {
   newArticleCartItem.innerHTML = "<p>Le panier est vide</p>";
 }
 
-const cartProductDisplay = (a) => {
-  a = 0; 
+const cartProductDisplay = () => {
   if (!productStorage) {
     emptyCart();
   } else {
+    const section = document.querySelectorAll("#cart__items");
     for (let product of productStorage) {
-      const creatArticleCartItem = document.createElement("article");
-      creatArticleCartItem.classList.add("cart__item");
-      creatArticleCartItem.setAttribute("data-id", `${product.id}`);
-      creatArticleCartItem.setAttribute("data-color", `${product.color}`);
-      const newArticleCartItem = document.querySelector("#cart__items");
-      newArticleCartItem.appendChild(creatArticleCartItem);
+      console.log("test");
+      console.log(section)
+     
 
-      const section = document.querySelectorAll("#cart__items article")[a];
-
-      section.innerHTML = `
+      section.innerHTML += `
+      <article class="cart__item" data-id="${product.id}" data-color="${product.color}">
       <div class="cart__item__img">
       <img
           src="${product.img}"
@@ -55,8 +51,8 @@ const cartProductDisplay = (a) => {
           </div>
       </div>
       </div>
+      </article>
       `;
-      a = a + 1;
     }
   }
 };
@@ -86,8 +82,8 @@ function deleteItem(item) {
   localStorage.setItem("produit", JSON.stringify(productStorage));
   alert("Ce produit a été supprimer du panier");
   window.location.href = "cart.html";
-  if (productStorage.length < 1) {
+  
     localStorage.removeItem("produit");
     emptyCart();
-  }
+  
 }
