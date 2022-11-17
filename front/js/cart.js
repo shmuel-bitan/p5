@@ -1,7 +1,6 @@
 const basketValue = JSON.parse(localStorage.getItem("kanapLs"));
-/////////////// déclaration de la fonction du fetch pour acceder aux infos Hors Scope/////////
 async function fetchApi() {    
-let basketArrayFull = []; // tableau vide qui va contenir les objets créés en suite
+let basketArrayFull = []; 
 let basketClassFull = JSON.parse(localStorage.getItem("kanapLs"));
 if (basketClassFull !== null) {
 for (let g = 0; g < basketClassFull.length; g++) {
@@ -9,7 +8,6 @@ for (let g = 0; g < basketClassFull.length; g++) {
 		.then((res) => res.json())
 		.then((canap) => {
 			const article = {
-				//création d'un objet qui va regrouper les infos nécessaires à la suite
 				_id: canap._id,
 				name: canap.name,
 				price: canap.price,
@@ -18,7 +16,7 @@ for (let g = 0; g < basketClassFull.length; g++) {
 				alt: canap.altTxt,
 				img: canap.imageUrl,
 			};
-			basketArrayFull.push(article); //ajout de l'objet article au tableau 
+			basketArrayFull.push(article); 
 		})
 		.catch(function (err) {
 			console.log(err);
@@ -28,14 +26,13 @@ for (let g = 0; g < basketClassFull.length; g++) {
 return basketArrayFull;
 };
 
-//////////// fonction d'affichage du DOM ////////////////////
 
 async function showBasket() {
-	const responseFetch = await fetchApi(); // appel de la fonction FETCH et attente de sa réponse//
+	const responseFetch = await fetchApi(); 
 	const basketValue = JSON.parse(localStorage.getItem("kanapLs"));
 	if (basketValue !== null && basketValue.length !== 0) {
 		const zonePanier = document.querySelector("#cart__items");
-		responseFetch.forEach((product) => { // injection dynamique des produits dans le DOM
+		responseFetch.forEach((product) => { 
 			zonePanier.innerHTML += `<article class="cart__item" data-id="${product._id}" data-color="${product.color}">
                 <div class="cart__item__img">
                   <img src= "${product.img}" alt="Photographie d'un canapé">
@@ -59,37 +56,27 @@ async function showBasket() {
               </article>`;
 		});
 	} else {
-		return messagePanierVide(); //si Ls vide, affichage du message Panier Vide
+		return messagePanierVide(); 
 	}
 
 };
-//////////////création des fonctions de modif et suppression d'articles du panier/////////////////
-
-function getBasket() {  // fonction de récupération du LocalStorage//////
+function getBasket() {  
     return JSON.parse(localStorage.getItem("kanapLs"));
 };
 
-//Fonction permettant de modifier le nombre d'éléments dans le panier
 
 async function modifyQuantity() {
-	await fetchApi(); //on attend que le fetch soit terminé
+	await fetchApi();
 	const quantityInCart = document.querySelectorAll(".itemQuantity");
 	for (let input of quantityInCart) {
 		input.addEventListener("change", function () {
-			//écoute du changement de qty
 			let basketValue = getBasket();
-			//On récupère l'ID de la donnée modifiée
 			let idModif = this.closest(".cart__item").dataset.id;
-			//On récupère la couleur de la donnée modifiée
 			let colorModif = this.closest(".cart__item").dataset.color;
-			//On filtre le Ls avec l'iD du canap modifié
 			let findId = basketValue.filter((e) => e.idSelectedProduct === idModif);
-			//Puis on cherche le canap même id par sa couleur 
 			let findColor = findId.find((e) => e.colorSelectedProduct === colorModif);
 			if (this.value > 0) {
-				// si la couleur et l'id sont trouvés, on modifie la quantité en fonction
 				findColor.quantity = this.value;
-				//On Push le panier dans le local Storage
 				localStorage.setItem("kanapLs", JSON.stringify(basketValue));
 				calculQteTotale();
 				calculPrixTotal();
@@ -139,9 +126,9 @@ removeItem();
 
 /// Initialisation des fonctions ///////////
 
-initialize();
+main();
 
-async function initialize() {
+async function main() {
 showBasket();         ////// affichage du DOM ( avec rappel du fetchApi //////
 removeItem();		  ////// suppression dynamique des articles du panier et 
 modifyQuantity();	  ////// modification des quantités
@@ -182,7 +169,11 @@ async function calculPrixTotal() {
 modifyQuantity();
 removeItem();
 
+/**functionmessagePanierVide(){
+	const cartTitle = document.querySelector(
+		" div.cart"
+	)
+};*/
 
-//On Push le panier dans le local Storage
 localStorage.setItem("kanapLs", JSON.stringify(basketValue));
 
